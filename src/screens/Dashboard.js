@@ -34,6 +34,8 @@ import ModalView from "../components/ModalView";
 import { FontAwesome5 } from "@expo/vector-icons";
 import ModalClass from "../components/ModalClass";
 import MyButton from "../components/MyButton";
+import moment from "moment";
+
 // import { ScrollView } from "react-native-gesture-handler";
 import { getUser } from "../apis/LoginApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -45,18 +47,35 @@ const Dashboard = ({ navigation }) => {
 
   const [viewModal, setViewModal] = useState(false);
   const [data, setData] = useState([]);
+  const [kelas, setKelas] = useState("");
+  const [tujuan, setTujuan] = useState("");
   const [dataBus, setDataBus] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+
   const [viewModalClass, setViewModalClass] = useState(false);
-  const [date, setDate] = useState(new Date());
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setDate(currentDate);
+  const [date, setDate] = useState(null);
+  const [formattedDate, setFormattedDate] = useState("");
+
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, "0");
+    const day = `${date.getDate()}`.padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
+  const onChange = (event, selectedDate) => {
+    setDate(selectedDate);
+    // const formatted = ;
+    setFormattedDate(formatDate(date));
+  };
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
 
     getUserData();
     getBusData();
+    setTujuan("");
+    setFormattedDate("");
+    setKelas("");
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
@@ -68,7 +87,32 @@ const Dashboard = ({ navigation }) => {
       setData(res.data);
     });
   };
+  const getBusToday = async () => {
+    const currentDate = new Date();
+    const keberangkatans = formatDate(currentDate);
+    console.log(keberangkatans);
+    try {
+      const requestData = {};
 
+      if (kelas) {
+        requestData.kelas = kelas;
+      }
+      if (tujuan) {
+        requestData.route = tujuan;
+      }
+
+      requestData.keberangkatan = keberangkatans;
+
+      const response = await axios.post(
+        "http://192.168.100.36:8080/api/bus/search",
+        requestData
+      );
+      setSearchResults(response.data.data);
+      // console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const getBusData = async () => {
     // await AsyncStorage.getItem("Token").then(async (token) => {
     const res = await axios.get("http://192.168.100.36:8080/api/bus");
@@ -87,14 +131,25 @@ const Dashboard = ({ navigation }) => {
       mode: currentMode,
     });
   };
-  const formatDate = (date) => {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    return date.toLocaleDateString(undefined, options);
-  };
 
+  const handleSearch = () => {
+    navigation.navigate("BusList", { kelas, tujuan, formattedDate });
+  };
+  const handleSearchToday = () => {
+    const keberangkatans = formatDate(new Date());
+    navigation.navigate("BusList", { keberangkatans });
+  };
+  // console.log(tujuan);
+  useEffect(() => {
+    if (date) {
+      const formatted = formatDate(date);
+      setFormattedDate(formatted);
+    }
+  }, [date]);
   useEffect(() => {
     getUserData();
     getBusData();
+    getBusToday();
   }, []);
 
   return (
@@ -194,7 +249,9 @@ const Dashboard = ({ navigation }) => {
                       // width: "100%",
                     }}
                   >
-                    <Text style={[StylesFont.semiBoldh4]}>Medan</Text>
+                    <Text style={[StylesFont.semiBoldh4]}>
+                      {tujuan ? tujuan : "Mau Kemana nih?"}
+                    </Text>
                     <AntDesign name="down" size={20} color="black" />
                   </TouchableOpacity>
                 </View>
@@ -229,7 +286,7 @@ const Dashboard = ({ navigation }) => {
                     <Text
                       style={[StylesFont.semiBoldh4, { color: Colors.Dark }]}
                     >
-                      {formatDate(date)}
+                      {formattedDate ? formattedDate : "Pilih Tanggal"}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -270,7 +327,9 @@ const Dashboard = ({ navigation }) => {
                       // width: "100%",
                     }}
                   >
-                    <Text style={[StylesFont.semiBoldh4]}>Pilih Kelas Bus</Text>
+                    <Text style={[StylesFont.semiBoldh4]}>
+                      {kelas === "" ? "Pilih Kelas" : kelas}
+                    </Text>
                     <AntDesign name="down" size={20} color="black" />
                   </TouchableOpacity>
                 </View>
@@ -279,10 +338,191 @@ const Dashboard = ({ navigation }) => {
               <Text>selected: {date.toLocaleString()}</Text> */}
               </View>
               <View style={{ marginVertical: width / 30 }}>
-                <MyButton title="Search" />
+                <MyButton title="Search" action={handleSearch} />
               </View>
             </View>
           </View>
+          {searchResults != "" ? (
+            <View
+              style={{
+                marginVertical: width / 30,
+                justifyContent: "space-between",
+                flexDirection: "row",
+              }}
+            >
+              <Text style={[StylesFont.semiBoldh5, { color: Colors.Dark }]}>
+                Keberangkatan Hari ini!
+              </Text>
+              <TouchableOpacity onPress={handleSearchToday}>
+                <Text
+                  style={[StylesFont.mediumSmall, { color: Colors.DarkPurple }]}
+                >
+                  Lihat Semua
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            ""
+          )}
+
+          <View style={{ gap: 10 }}>
+            {searchResults.map((item, index) => {
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() =>
+                    navigation.navigate("BusDetail", { id: item.id })
+                  }
+                  style={{
+                    height: height / 5,
+                    backgroundColor: Colors.grey,
+                    borderColor: Colors.SecondaryColor,
+                    borderWidth: 1,
+                    borderRadius: width / 20,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: "100%",
+                      borderBottomWidth: 1,
+                      paddingHorizontal: width / 26,
+                      height: "60%",
+                      // borderColor: Colors.SecondaryColor,
+                      borderBottomColor: Colors.SecondaryColor,
+                      flexDirection: "row",
+                      paddingVertical: width / 36,
+                    }}
+                  >
+                    <View style={{ width: "30%" }}>
+                      <Image
+                        source={
+                          item.route === "Indrapura"
+                            ? picIndrapura
+                            : item.route === "Aek Kanopan"
+                            ? picAekKanopan
+                            : item.route === "Aek Nabara"
+                            ? picAekNabara
+                            : item.route === "Ranto prapat"
+                            ? picRantauPrapat
+                            : item.route === "Kisaran"
+                            ? picKisaran
+                            : item.route === "Sipiongot"
+                            ? picSipiongot
+                            : item.route === "Tebing Tinggi"
+                            ? picTebing
+                            : item.route === "Simangambat"
+                            ? picSimangambat
+                            : ""
+                        }
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          borderRadius: width / 20,
+                        }}
+                      />
+                    </View>
+                    <View style={{ width: "70%", padding: width / 28 }}>
+                      <Text style={[StylesFont.semiBoldh5]}>{item.route}</Text>
+                      <Text
+                        style={[StylesFont.regularVerySmall, { color: "grey" }]}
+                      >
+                        {item.route === "Indrapura"
+                          ? "Batu Bara,Sumatera Utara"
+                          : item.route === "Aek Kanopan"
+                          ? "Labuhan Batu Utara,Sumatera Utara"
+                          : item.route === "Aek Nabara"
+                          ? "Labuhan Batu,Sumatera Utara"
+                          : item.route === "Ranto prapat"
+                          ? "Labuhan Batu,Sumatera Utara"
+                          : item.route === "Kisaran"
+                          ? "Asahan,Sumatera Utara"
+                          : item.route === "Sipiongot"
+                          ? "Padang Lawas Utara,Sumatera Utara"
+                          : item.route === "Tebing Tinggi"
+                          ? "Sumatera Utara"
+                          : item.route === "Simangambat"
+                          ? "Padang Lawas Utara,Sumatera Utara"
+                          : ""}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-around",
+                      alignItems: "center",
+                      paddingVertical: 5,
+                    }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        backgroundColor: Colors.LightPurple,
+                        padding: 4,
+                        borderRadius: 10,
+                      }}
+                    >
+                      <Text style={[StylesFont.mediumSmall, { color: "grey" }]}>
+                        Harga
+                      </Text>
+                      <Text style={[StylesFont.mediumSmall]}>
+                        <Text
+                          style={[StylesFont.mediumSmall, { color: "#02b80f" }]}
+                        >
+                          Rp
+                        </Text>
+                        {item.harga},-
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        backgroundColor: Colors.LightPurple,
+                        padding: 4,
+                        borderRadius: 10,
+                      }}
+                    >
+                      <Text style={[StylesFont.mediumSmall, { color: "grey" }]}>
+                        Tanggal
+                      </Text>
+                      <Text style={[StylesFont.mediumSmall]}>
+                        {item.keberangkatan}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        backgroundColor: Colors.LightPurple,
+                        padding: 4,
+                        borderRadius: 10,
+                      }}
+                    >
+                      <Text style={[StylesFont.mediumSmall, { color: "grey" }]}>
+                        Kapasitas
+                      </Text>
+                      <Text style={[StylesFont.mediumSmall]}>
+                        {item.kapasitas} Kursi
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        backgroundColor: Colors.LightPurple,
+                        padding: 4,
+                        borderRadius: 10,
+                      }}
+                    >
+                      <Text style={[StylesFont.mediumSmall, { color: "grey" }]}>
+                        Kelas Bus
+                      </Text>
+                      <Text style={[StylesFont.mediumSmall]}>{item.kelas}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
           <View
             style={{
               marginVertical: width / 30,
@@ -291,13 +531,15 @@ const Dashboard = ({ navigation }) => {
             }}
           >
             <Text style={[StylesFont.semiBoldh5, { color: Colors.Dark }]}>
-              Keberangkatan Hari ini!
+              Semua Keberangkatan!
             </Text>
-            <Text
-              style={[StylesFont.mediumSmall, { color: Colors.DarkPurple }]}
-            >
-              Lihat Semua
-            </Text>
+            <TouchableOpacity onPress={handleSearch}>
+              <Text
+                style={[StylesFont.mediumSmall, { color: Colors.DarkPurple }]}
+              >
+                Lihat Semua
+              </Text>
+            </TouchableOpacity>
           </View>
           <View style={{ gap: 10 }}>
             {dataBus.map((item, index) => {
@@ -458,14 +700,20 @@ const Dashboard = ({ navigation }) => {
           </View>
         </View>
         <Modal animationType="slide" transparent={true} visible={viewModal}>
-          <ModalView actionClose={() => setViewModal(false)} />
+          <ModalView
+            actionClose={() => setViewModal(false)}
+            setTujuan={setTujuan}
+          />
         </Modal>
         <Modal
           animationType="slide"
           transparent={true}
           visible={viewModalClass}
         >
-          <ModalClass actionClose={() => setViewModalClass(false)} />
+          <ModalClass
+            actionClose={() => setViewModalClass(false)}
+            setKelas={setKelas}
+          />
         </Modal>
       </ScrollView>
     </SafeAreaView>

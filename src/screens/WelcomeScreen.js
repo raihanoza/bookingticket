@@ -14,12 +14,13 @@ const WelcomeScreen = ({ navigation }) => {
     await AsyncStorage.getItem("Token").then(async (token) => {
       if (token) {
         await getUser(token).then((result) => {
-          console.log(result.data);
-          const data = result.data;
-          if (data) {
+          // console.log(result.data);
+
+          if (result) {
             //   if (data.status === "active") {
             navigation.navigate("Home");
             //   }
+          } else {
           }
 
           // if (result.status != 200) {

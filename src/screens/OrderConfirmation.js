@@ -12,29 +12,55 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Entypo } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import MyButton from "../components/MyButton";
-import ButtonDisable from "../components/ButtonDisable";
+import axios from "axios";
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
-const OrderDetail = ({ route, navigation }) => {
-  const { allData } = route.params;
-  // console.log(allData)
-
-  const getBookedSeats = (allData) => {
-    const bookedSeats = [];
-
-
-    allData.seats.forEach((seat) => {
-      if (!bookedSeats.includes(seat.seat_number)) {
-        bookedSeats.push(seat.seat_number);
+const OrderConfirmation = ({ route, navigation }) => {
+  const { dataBus, customerData, selectedSeats } = route.params;
+  console.log(dataBus);
+  console.log(customerData);
+  console.log(selectedSeats);
+  const handleBooking = async () => {
+    let seatData = {
+      customer_id: customerData.id,
+      bus_id: dataBus.id,
+      seats: selectedSeats,
+    };
+    try {
+      await axios
+        .post("http://192.168.100.36:8080/api/pesanyuk", seatData)
+        .then(async (res) => {
+          // console.log(res);
+          console.log(res.data.status);
+          console.log(res.status);
+          console.log(res.statusText);
+          if (res.data) {
+            //   // await AsyncStorage.setItem("Token", res.data.data.token);
+            //   Alert.alert("Berhasil", "Pendaftaran Berhasil");
+            navigation.navigate("BookingList");
+          } else {
+            Alert.alert("Gagal", "Pemesanan Gagal");
+          }
+        });
+    } catch (error) {
+      if (error.response) {
+        console.log(error.response.data); // Menampilkan pesan kesalahan dari server
+        console.log(error.response.status); // Menampilkan kode status HTTP
+        console.log(error.response.headers); // Menampilkan header respons
+      } else {
+        console.log("Error", error.message);
       }
+    }
+  };
+  function formatRupiah(number) {
+    const formatter = new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
     });
 
-
-    return bookedSeats;
-  };
-  const bookedSeats = getBookedSeats(allData);
-  // console.log(bookedSeats)
-
+    return formatter.format(number);
+  }
   const getSeatText = (seatNumber) => {
     return `kursi ${seatNumber}`;
   };
@@ -105,11 +131,27 @@ const OrderDetail = ({ route, navigation }) => {
             >
               <View style={{ flexDirection: "column" }}>
                 <Text style={[StylesFont.boldh3, { color: "white" }]}>
-                  {allData.bus.route}
+                  {dataBus.route}
                 </Text>
                 <Text style={[StylesFont.regularSmall, { color: "white" }]}>
                   <Ionicons name="location" size={18} color="white" /> Batu
-                  Bara,Sumatera Utara
+                  {dataBus.route === "Indrapura"
+                    ? "Batu Bara,Sumatera Utara"
+                    : dataBus.route === "Aek Kanopan"
+                    ? "Labuhan Batu Utara,Sumatera Utara"
+                    : dataBus.route === "Aek Nabara"
+                    ? "Labuhan Batu,Sumatera Utara"
+                    : dataBus.route === "Ranto prapat"
+                    ? "Labuhan Batu,Sumatera Utara"
+                    : dataBus.route === "Kisaran"
+                    ? "Asahan,Sumatera Utara"
+                    : dataBus.route === "Sipiongot"
+                    ? "Padang Lawas Utara,Sumatera Utara"
+                    : dataBus.route === "Tebing Tinggi"
+                    ? "Sumatera Utara"
+                    : dataBus.route === "Simangambat"
+                    ? "Padang Lawas Utara,Sumatera Utara"
+                    : ""}
                 </Text>
               </View>
             </LinearGradient>
@@ -139,7 +181,7 @@ const OrderDetail = ({ route, navigation }) => {
                 <Text style={[StylesFont.mediumSmall, { color: "#02b80f" }]}>
                   Rp
                 </Text>
-                {allData.total_amount},-
+                {formatRupiah(`${selectedSeats.length * dataBus.harga}`)},-
               </Text>
             </View>
             <View
@@ -154,7 +196,9 @@ const OrderDetail = ({ route, navigation }) => {
               <Text style={[StylesFont.mediumSmall, { color: "grey" }]}>
                 Tanggal
               </Text>
-              <Text style={[StylesFont.mediumSmall]}>{allData.bus.keberangkatan}</Text>
+              <Text style={[StylesFont.mediumSmall]}>
+                {dataBus.keberangkatan}
+              </Text>
             </View>
             <View
               style={{
@@ -167,7 +211,7 @@ const OrderDetail = ({ route, navigation }) => {
               <Text style={[StylesFont.mediumSmall, { color: "grey" }]}>
                 Kapasitas
               </Text>
-              <Text style={[StylesFont.mediumSmall]}>{allData.bus.kapasitas}</Text>
+              <Text style={[StylesFont.mediumSmall]}>{dataBus.kapasitas}</Text>
             </View>
             <View
               style={{
@@ -179,7 +223,7 @@ const OrderDetail = ({ route, navigation }) => {
               <Text style={[StylesFont.mediumSmall, { color: "grey" }]}>
                 Kelas Bus
               </Text>
-              <Text style={[StylesFont.mediumSmall]}>{allData.bus.kelas}</Text>
+              <Text style={[StylesFont.mediumSmall]}>{dataBus.kelas}</Text>
             </View>
           </View>
           <View
@@ -194,7 +238,7 @@ const OrderDetail = ({ route, navigation }) => {
             </View>
             <View>
               <Text style={[StylesFont.mediumh5, { color: "grey" }]}>
-                {allData.customer.name}
+                {customerData.name}
               </Text>
             </View>
           </View>
@@ -212,7 +256,7 @@ const OrderDetail = ({ route, navigation }) => {
             </View>
             <View>
               <Text style={[StylesFont.mediumh5, { color: "grey" }]}>
-                {allData.total_seats}
+                {selectedSeats.length}
               </Text>
             </View>
           </View>
@@ -230,7 +274,7 @@ const OrderDetail = ({ route, navigation }) => {
             </View>
             <View>
               <Text style={[StylesFont.mediumh5, { color: "grey" }]}>
-                {bookedSeats.map(getSeatText).join(", ")}
+                {selectedSeats.map(getSeatText).join(", ")}
               </Text>
             </View>
           </View>
@@ -329,7 +373,8 @@ const OrderDetail = ({ route, navigation }) => {
             }}
           >
             <Text style={[StylesFont.mediumh5]}>
-              Segera Lakukan Pembayaran Untuk Mendapatkan Tiket
+              Yakin untuk Konfirmasi Pesanan ini? {"\n"}Pesanan yang telah
+              dikonfirmasi tidak bisa diubah!
             </Text>
           </View>
 
@@ -340,12 +385,10 @@ const OrderDetail = ({ route, navigation }) => {
               justifyContent: "flex-end",
             }}
           >
-            {allData.payment_proof?<MyButton
-              title="Lihat Tiket"
-              action={() => navigation.navigate("Ticket", { allData: allData, bookedSeats: bookedSeats })}
-            />:<ButtonDisable title="Lihat Tiket"/>}
-            
-            
+            <MyButton
+              title="Konfirmasi Pemesanan"
+              action={() => handleBooking()}
+            />
           </View>
         </View>
       </ScrollView>
@@ -353,4 +396,4 @@ const OrderDetail = ({ route, navigation }) => {
   );
 };
 
-export default OrderDetail;
+export default OrderConfirmation;

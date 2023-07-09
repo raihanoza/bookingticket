@@ -33,6 +33,8 @@ const BusDetail = ({ route, navigation }) => {
     // });
   };
 
+  console.log(dataBus.id);
+
   useEffect(() => {
     getBusDetail();
   }, []);
@@ -98,7 +100,7 @@ const BusDetail = ({ route, navigation }) => {
                 ? picTebing
                 : dataBus.route === "Simangambat"
                 ? picSimangambat
-                : ""
+                : picIndrapura
             }
             style={{
               width: "100%",
@@ -296,7 +298,11 @@ const BusDetail = ({ route, navigation }) => {
         <View style={{ flex: 1, justifyContent: "flex-end" }}>
           <MyButton
             title="Pesan Bus Sekarang"
-            action={() => navigation.navigate("BookingSeat")}
+            action={() =>
+              navigation.navigate("BookingSeat", {
+                dataBus: dataBus,
+              })
+            }
           />
         </View>
       </View>

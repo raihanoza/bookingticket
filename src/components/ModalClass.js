@@ -11,7 +11,11 @@ import StylesFont from "../utils/StylesFont";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
-const ModalClass = ({ actionClose }) => {
+const ModalClass = ({ actionClose, setKelas }) => {
+  const handleClass = (value) => {
+    setKelas(value);
+    actionClose();
+  };
   return (
     <View
       style={{
@@ -52,19 +56,19 @@ const ModalClass = ({ actionClose }) => {
             </View>
             <View style={{ gap: 10, marginTop: 10 }}>
               <TouchableOpacity
-                onPress={actionClose}
+                onPress={() => handleClass("Economy1")}
                 style={{ borderBottomWidth: 1, paddingVertical: 5 }}
               >
                 <Text style={[StylesFont.semiBoldh4, { color: "black" }]}>
-                  Economy
+                  Economy 1 (27 Kursi)
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={actionClose}
+                onPress={() => handleClass("Economy2")}
                 style={{ borderBottomWidth: 1, paddingVertical: 5 }}
               >
                 <Text style={[StylesFont.semiBoldh4, { color: "black" }]}>
-                  Business
+                  Economy 2 (19 Kursi)
                 </Text>
               </TouchableOpacity>
             </View>

@@ -5,13 +5,19 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import StylesFont from "../utils/StylesFont";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
-const ModalView = ({ actionClose }) => {
+const ModalView = ({ actionClose, setTujuan }) => {
+  // const [tujuan, setTujuan] = useState("");
+  // console.log(tujuan);
+  const handleTujuan = (value) => {
+    setTujuan(value);
+    actionClose();
+  };
   return (
     <View
       style={{
@@ -52,7 +58,7 @@ const ModalView = ({ actionClose }) => {
             </View>
             <View style={{ gap: 10, marginTop: 10 }}>
               <TouchableOpacity
-                onPress={actionClose}
+                onPress={() => handleTujuan("Indrapura")}
                 style={{ borderBottomWidth: 1, paddingVertical: 5 }}
               >
                 <Text style={[StylesFont.semiBoldh4, { color: "black" }]}>
@@ -60,7 +66,7 @@ const ModalView = ({ actionClose }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={actionClose}
+                onPress={() => handleTujuan("Ranto prapat")}
                 style={{ borderBottomWidth: 1, paddingVertical: 5 }}
               >
                 <Text style={[StylesFont.semiBoldh4, { color: "black" }]}>
@@ -68,7 +74,7 @@ const ModalView = ({ actionClose }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={actionClose}
+                onPress={() => handleTujuan("Aek Nabara")}
                 style={{ borderBottomWidth: 1, paddingVertical: 5 }}
               >
                 <Text style={[StylesFont.semiBoldh4, { color: "black" }]}>
@@ -76,7 +82,7 @@ const ModalView = ({ actionClose }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={actionClose}
+                onPress={() => handleTujuan("Kisaran")}
                 style={{ borderBottomWidth: 1, paddingVertical: 5 }}
               >
                 <Text style={[StylesFont.semiBoldh4, { color: "black" }]}>
@@ -84,7 +90,7 @@ const ModalView = ({ actionClose }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={actionClose}
+                onPress={() => handleTujuan("Aek Kanopan")}
                 style={{ borderBottomWidth: 1, paddingVertical: 5 }}
               >
                 <Text style={[StylesFont.semiBoldh4, { color: "black" }]}>
@@ -92,7 +98,7 @@ const ModalView = ({ actionClose }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={actionClose}
+                onPress={() => handleTujuan("Sipiongot")}
                 style={{ borderBottomWidth: 1, paddingVertical: 5 }}
               >
                 <Text style={[StylesFont.semiBoldh4, { color: "black" }]}>
@@ -100,7 +106,7 @@ const ModalView = ({ actionClose }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={actionClose}
+                onPress={() => handleTujuan("Tebing Tinggi")}
                 style={{ borderBottomWidth: 1, paddingVertical: 5 }}
               >
                 <Text style={[StylesFont.semiBoldh4, { color: "black" }]}>
@@ -108,11 +114,11 @@ const ModalView = ({ actionClose }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={actionClose}
+                onPress={() => handleTujuan("Simangambat")}
                 style={{ borderBottomWidth: 1, paddingVertical: 5 }}
               >
                 <Text style={[StylesFont.semiBoldh4, { color: "black" }]}>
-                  Tanjung Pura
+                  Simangambat
                 </Text>
               </TouchableOpacity>
             </View>

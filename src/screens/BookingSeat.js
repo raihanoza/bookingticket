@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import StylesFont from "../utils/StylesFont";
@@ -13,9 +13,24 @@ import Colors from "../utils/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import MyButton from "../components/MyButton";
 import { ScrollView } from "react-native-gesture-handler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getUser } from "../apis/LoginApi";
+import axios from "axios";
 const width = Dimensions.get("window").width;
-const BookingSeat = ({ navigation }) => {
+const BookingSeat = ({ route, navigation }) => {
+  const { dataBus } = route.params;
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [customerData, setCustomerData] = useState("");
+  // console.log(selectedSeats);
+
+  const getUserData = async () => {
+    await AsyncStorage.getItem("Token").then(async (token) => {
+      const res = await getUser(token);
+      // console.log(res.data.id);
+      setCustomerData(res.data);
+    });
+  };
+  // console.log(dataBus);
 
   const handleClickSeat = (seatNumber) => {
     // Mengecek apakah kursi sudah dipilih sebelumnya
@@ -42,6 +57,10 @@ const BookingSeat = ({ navigation }) => {
 
     return formatter.format(number);
   }
+
+  useEffect(() => {
+    getUserData();
+  }, []);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <ScrollView>
@@ -563,7 +582,7 @@ const BookingSeat = ({ navigation }) => {
                   19
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity
+              {dataBus.kelas==="Economy1"?<TouchableOpacity
                 onPress={() => handleClickSeat(20)}
                 style={[
                   styles.seat,
@@ -579,9 +598,10 @@ const BookingSeat = ({ navigation }) => {
                 >
                   20
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity>:""}
+              
             </View>
-            <View
+            {dataBus.kelas==="Economy1"?<View
               style={{
                 width: "100%",
                 // borderWidth: 1,
@@ -623,10 +643,11 @@ const BookingSeat = ({ navigation }) => {
                   22
                 </Text>
               </TouchableOpacity>
-            </View>
+            </View>:""}
+            
           </View>
         </View>
-        <View style={{ width: width, marginVertical: width / 10 }}>
+        {dataBus.kelas==="Economy1"?<View style={{ width: width, marginVertical: width / 10 }}>
           <View
             style={{
               width: width,
@@ -722,7 +743,9 @@ const BookingSeat = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </View>:""}
+        
+              
         <View style={{ width: width, paddingHorizontal: width / 22 }}>
           <View
             style={{
@@ -745,7 +768,7 @@ const BookingSeat = ({ navigation }) => {
               Total Harga
             </Text>
             <Text style={[StylesFont.mediumSmall, { color: "black" }]}>
-              {formatRupiah(`${selectedSeats.length * 50000}`)}
+              {formatRupiah(`${selectedSeats.length * dataBus.harga}`)}
               <Text>,-</Text>
             </Text>
           </View>
@@ -761,7 +784,13 @@ const BookingSeat = ({ navigation }) => {
         >
           <MyButton
             title="Lanjutkan Pemesanan"
-            action={() => navigation.navigate("BookingForm")}
+            action={() =>
+              navigation.navigate("OrderConfirmation", {
+                dataBus: dataBus,
+                customerData: customerData,
+                selectedSeats: selectedSeats,
+              })
+            }
           />
         </View>
       </ScrollView>

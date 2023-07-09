@@ -15,6 +15,8 @@ import Profil from "../screens/Profil";
 import BottomNavigation from "./BottomNavigation";
 import OrderDetail from "../screens/OrderDetail";
 import Ticket from "../screens/Ticket";
+import BusList from "../screens/BusList";
+import OrderConfirmation from "../screens/OrderConfirmation";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -50,7 +52,9 @@ export default function Routes() {
         <Stack.Screen name="BookingForm" component={BookingForm} />
         <Stack.Screen name="BookingDetail" component={BookingDetail} />
         <Stack.Screen name="OrderDetail" component={OrderDetail} />
+        <Stack.Screen name="BusList" component={BusList} />
         <Stack.Screen name="Ticket" component={Ticket} />
+        <Stack.Screen name="OrderConfirmation" component={OrderConfirmation} />
       </Stack.Navigator>
     </NavigationContainer>
   );
