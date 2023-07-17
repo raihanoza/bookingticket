@@ -32,6 +32,8 @@ const BookingSeat = ({ route, navigation }) => {
   };
   // console.log(dataBus);
 
+
+ 
   const handleClickSeat = (seatNumber) => {
     // Mengecek apakah kursi sudah dipilih sebelumnya
     const isSeatSelected = selectedSeats.includes(seatNumber);

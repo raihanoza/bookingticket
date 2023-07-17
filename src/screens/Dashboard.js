@@ -126,7 +126,7 @@ const Dashboard = ({ navigation }) => {
   };
   const showMode = (currentMode) => {
     DateTimePickerAndroid.open({
-      value: date,
+      value: date?date:new Date(),
       onChange,
       mode: currentMode,
     });
