@@ -126,7 +126,7 @@ const Dashboard = ({ navigation }) => {
   };
   const showMode = (currentMode) => {
     DateTimePickerAndroid.open({
-      value: date?date:new Date(),
+      value: date ? date : new Date(),
       onChange,
       mode: currentMode,
     });
@@ -498,10 +498,10 @@ const Dashboard = ({ navigation }) => {
                       }}
                     >
                       <Text style={[StylesFont.mediumSmall, { color: "grey" }]}>
-                        Kapasitas
+                        Pukul
                       </Text>
                       <Text style={[StylesFont.mediumSmall]}>
-                        {item.kapasitas} Kursi
+                        {item.waktu} WIB
                       </Text>
                     </View>
                     <View
@@ -674,10 +674,10 @@ const Dashboard = ({ navigation }) => {
                       }}
                     >
                       <Text style={[StylesFont.mediumSmall, { color: "grey" }]}>
-                        Kapasitas
+                        Waktu
                       </Text>
                       <Text style={[StylesFont.mediumSmall]}>
-                        {item.kapasitas} Kursi
+                        {item.waktu} WIB
                       </Text>
                     </View>
                     <View

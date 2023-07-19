@@ -22,13 +22,11 @@ const OrderDetail = ({ route, navigation }) => {
   const getBookedSeats = (allData) => {
     const bookedSeats = [];
 
-
     allData.seats.forEach((seat) => {
       if (!bookedSeats.includes(seat.seat_number)) {
         bookedSeats.push(seat.seat_number);
       }
     });
-
 
     return bookedSeats;
   };
@@ -154,7 +152,9 @@ const OrderDetail = ({ route, navigation }) => {
               <Text style={[StylesFont.mediumSmall, { color: "grey" }]}>
                 Tanggal
               </Text>
-              <Text style={[StylesFont.mediumSmall]}>{allData.bus.keberangkatan}</Text>
+              <Text style={[StylesFont.mediumSmall]}>
+                {allData.bus.keberangkatan}
+              </Text>
             </View>
             <View
               style={{
@@ -165,9 +165,11 @@ const OrderDetail = ({ route, navigation }) => {
               }}
             >
               <Text style={[StylesFont.mediumSmall, { color: "grey" }]}>
-                Kapasitas
+                Pukul
               </Text>
-              <Text style={[StylesFont.mediumSmall]}>{allData.bus.kapasitas}</Text>
+              <Text style={[StylesFont.mediumSmall]}>
+                {allData.bus.waktu} WIB
+              </Text>
             </View>
             <View
               style={{
@@ -340,12 +342,19 @@ const OrderDetail = ({ route, navigation }) => {
               justifyContent: "flex-end",
             }}
           >
-            {allData.payment_proof?<MyButton
-              title="Lihat Tiket"
-              action={() => navigation.navigate("Ticket", { allData: allData, bookedSeats: bookedSeats })}
-            />:<ButtonDisable title="Lihat Tiket"/>}
-            
-            
+            {allData.payment_proof ? (
+              <MyButton
+                title="Lihat Tiket"
+                action={() =>
+                  navigation.navigate("Ticket", {
+                    allData: allData,
+                    bookedSeats: bookedSeats,
+                  })
+                }
+              />
+            ) : (
+              <ButtonDisable title="Lihat Tiket" />
+            )}
           </View>
         </View>
       </ScrollView>

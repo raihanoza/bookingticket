@@ -23,23 +23,19 @@ const BookingList = ({ navigation }) => {
   // console.log(bookingData);
 
   useEffect(() => {
-    const getUserData = async () => {
-
-    };
+    const getUserData = async () => {};
     getUserData();
     const fetchData = async () => {
       await AsyncStorage.getItem("Token").then(async (token) => {
-        const res = await getUser(token)
+        const res = await getUser(token);
         const response = await axios.get(
           `http://192.168.100.36:8080/api/customers/${res.data.id}/bookings`
         );
         // console.log(response.data.bookings);
-        setBookingData(response.data.data)
-
+        setBookingData(response.data.data);
       });
-
     };
-    fetchData()
+    fetchData();
   }, []);
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -63,157 +59,158 @@ const BookingList = ({ navigation }) => {
         <View style={{ gap: 5, marginTop: width / 20 }}>
           {bookingData != undefined
             ? bookingData.map((item, index) => {
-              return (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() =>
-                    navigation.navigate("OrderDetail", {
-                      allData: item
-                    })
-                  }
-                  style={{
-                    height: height / 5,
-                    backgroundColor: Colors.grey,
-                    borderColor: Colors.SecondaryColor,
-                    borderWidth: 1,
-                    borderRadius: width / 20,
-                  }}
-                >
-                  <View
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() =>
+                      navigation.navigate("OrderDetail", {
+                        allData: item,
+                      })
+                    }
                     style={{
-                      width: "100%",
-                      borderBottomWidth: 1,
-                      paddingHorizontal: width / 26,
-                      height: "60%",
-                      // borderColor: Colors.SecondaryColor,
-                      borderBottomColor: Colors.SecondaryColor,
-                      flexDirection: "row",
-                      paddingVertical: width / 36,
-                    }}
-                  >
-                    <View style={{ width: "30%" }}>
-                      <Image
-                        source={picIndrapura}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          borderRadius: width / 20,
-                        }}
-                      />
-                    </View>
-                    <View style={{ width: "45%", padding: width / 28 }}>
-                      <Text style={[StylesFont.semiBoldh5]}>
-                        {item.bus.route}
-                      </Text>
-                      <Text
-                        style={[
-                          StylesFont.regularVerySmall,
-                          { color: "grey" },
-                        ]}
-                      >
-                        Batu Bara,Sumatera Utara
-                      </Text>
-                    </View>
-                    <View style={{ width: "25%" }}>
-                      <Text
-                        style={[
-                          StylesFont.regularVerySmall,
-                          { color: Colors.PrimaryColor },
-                        ]}
-                      >
-                        {item.payment_proof === null ? "Menunggu Pembayaran" : "Sudah Dibayar"}
-
-                      </Text>
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-around",
-                      alignItems: "center",
-                      paddingVertical: 5,
+                      height: height / 5,
+                      backgroundColor: Colors.grey,
+                      borderColor: Colors.SecondaryColor,
+                      borderWidth: 1,
+                      borderRadius: width / 20,
                     }}
                   >
                     <View
                       style={{
-                        flexDirection: "column",
-                        backgroundColor: Colors.LightPurple,
-                        padding: 4,
-                        borderRadius: 10,
+                        width: "100%",
+                        borderBottomWidth: 1,
+                        paddingHorizontal: width / 26,
+                        height: "60%",
+                        // borderColor: Colors.SecondaryColor,
+                        borderBottomColor: Colors.SecondaryColor,
+                        flexDirection: "row",
+                        paddingVertical: width / 36,
                       }}
                     >
-                      <Text
-                        style={[StylesFont.mediumSmall, { color: "grey" }]}
-                      >
-                        Total Harga
-                      </Text>
-                      <Text style={[StylesFont.mediumSmall]}>
+                      <View style={{ width: "30%" }}>
+                        <Image
+                          source={picIndrapura}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            borderRadius: width / 20,
+                          }}
+                        />
+                      </View>
+                      <View style={{ width: "45%", padding: width / 28 }}>
+                        <Text style={[StylesFont.semiBoldh5]}>
+                          {item.bus.route}
+                        </Text>
                         <Text
                           style={[
-                            StylesFont.mediumSmall,
-                            { color: "#02b80f" },
+                            StylesFont.regularVerySmall,
+                            { color: "grey" },
                           ]}
                         >
-                          Rp
+                          Batu Bara,Sumatera Utara
                         </Text>
-                        {item.total_amount},-
-                      </Text>
+                      </View>
+                      <View style={{ width: "25%" }}>
+                        <Text
+                          style={[
+                            StylesFont.regularVerySmall,
+                            { color: Colors.PrimaryColor },
+                          ]}
+                        >
+                          {item.payment_proof === null
+                            ? "Menunggu Pembayaran"
+                            : "Sudah Dibayar"}
+                        </Text>
+                      </View>
                     </View>
                     <View
                       style={{
-                        flexDirection: "column",
-                        backgroundColor: Colors.LightPurple,
-                        padding: 4,
-                        borderRadius: 10,
+                        flexDirection: "row",
+                        justifyContent: "space-around",
+                        alignItems: "center",
+                        paddingVertical: 5,
                       }}
                     >
-                      <Text
-                        style={[StylesFont.mediumSmall, { color: "grey" }]}
+                      <View
+                        style={{
+                          flexDirection: "column",
+                          backgroundColor: Colors.LightPurple,
+                          padding: 4,
+                          borderRadius: 10,
+                        }}
                       >
-                        Tanggal
-                      </Text>
-                      <Text style={[StylesFont.mediumSmall]}>
-                        {item.bus.keberangkatan}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: "column",
-                        backgroundColor: Colors.LightPurple,
-                        padding: 4,
-                        borderRadius: 10,
-                      }}
-                    >
-                      <Text
-                        style={[StylesFont.mediumSmall, { color: "grey" }]}
+                        <Text
+                          style={[StylesFont.mediumSmall, { color: "grey" }]}
+                        >
+                          Total Harga
+                        </Text>
+                        <Text style={[StylesFont.mediumSmall]}>
+                          <Text
+                            style={[
+                              StylesFont.mediumSmall,
+                              { color: "#02b80f" },
+                            ]}
+                          >
+                            Rp
+                          </Text>
+                          {item.total_amount},-
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: "column",
+                          backgroundColor: Colors.LightPurple,
+                          padding: 4,
+                          borderRadius: 10,
+                        }}
                       >
-                        Kapasitas
-                      </Text>
-                      <Text style={[StylesFont.mediumSmall]}>
-                        {item.bus.kapasitas}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: "column",
-                        backgroundColor: Colors.LightPurple,
-                        padding: 4,
-                        borderRadius: 10,
-                      }}
-                    >
-                      <Text
-                        style={[StylesFont.mediumSmall, { color: "grey" }]}
+                        <Text
+                          style={[StylesFont.mediumSmall, { color: "grey" }]}
+                        >
+                          Tanggal
+                        </Text>
+                        <Text style={[StylesFont.mediumSmall]}>
+                          {item.bus.keberangkatan}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: "column",
+                          backgroundColor: Colors.LightPurple,
+                          padding: 4,
+                          borderRadius: 10,
+                        }}
                       >
-                        Kelas Bus
-                      </Text>
-                      <Text style={[StylesFont.mediumSmall]}>
-                        {item.bus.kelas}
-                      </Text>
+                        <Text
+                          style={[StylesFont.mediumSmall, { color: "grey" }]}
+                        >
+                          Pukul
+                        </Text>
+                        <Text style={[StylesFont.mediumSmall]}>
+                          {item.bus.waktu} WIB
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: "column",
+                          backgroundColor: Colors.LightPurple,
+                          padding: 4,
+                          borderRadius: 10,
+                        }}
+                      >
+                        <Text
+                          style={[StylesFont.mediumSmall, { color: "grey" }]}
+                        >
+                          Kelas Bus
+                        </Text>
+                        <Text style={[StylesFont.mediumSmall]}>
+                          {item.bus.kelas}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
-              );
-            })
+                  </TouchableOpacity>
+                );
+              })
             : ""}
         </View>
       </ScrollView>

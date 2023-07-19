@@ -200,11 +200,9 @@ const BusDetail = ({ route, navigation }) => {
             }}
           >
             <Text style={[StylesFont.mediumSmall, { color: "grey" }]}>
-              Kapasitas
+              Pukul
             </Text>
-            <Text style={[StylesFont.mediumSmall]}>
-              {dataBus.kapasitas} Kursi
-            </Text>
+            <Text style={[StylesFont.mediumSmall]}>{dataBus.waktu} WIB</Text>
           </View>
           <View
             style={{

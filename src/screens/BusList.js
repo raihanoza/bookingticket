@@ -240,10 +240,10 @@ const BusList = ({ route, navigation }) => {
                       }}
                     >
                       <Text style={[StylesFont.mediumSmall, { color: "grey" }]}>
-                        Kapasitas
+                        Pukul
                       </Text>
                       <Text style={[StylesFont.mediumSmall]}>
-                        {item.kapasitas} Kursi
+                        {item.waktu} WIB
                       </Text>
                     </View>
                     <View
