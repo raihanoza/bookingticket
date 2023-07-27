@@ -12,24 +12,19 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import StylesFont from "../utils/StylesFont";
 import Colors from "../utils/Colors";
 import MainLogo from "../../assets/images/3.png";
-import HiddenEye from "../../assets/icons/hidden.png";
-import EyeIcon from "../../assets/icons/eye.png";
-import IconPassword from "../../assets/icons/iconpassword.png";
-import IconProfile from "../../assets/icons/iconprofile.png";
 import { FontAwesome } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import MyButton from "../components/MyButton";
-import { Feather } from "@expo/vector-icons";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
-const LoginScreen = ({ navigation }) => {
+const ChangePassword = ({ route, navigation }) => {
+  const { email } = route.params;
   const [passwordVisibility, setPasswordVisibility] = useState(true);
-  const [rightIcon, setRightIcon] = useState("eye");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confPassword, setConfPassword] = useState("");
+  const [rightIcon, setRightIcon] = useState("eye");
 
   const handlePasswordVisibility = () => {
     if (rightIcon === "eye") {
@@ -40,21 +35,34 @@ const LoginScreen = ({ navigation }) => {
       setPasswordVisibility(!passwordVisibility);
     }
   };
-
-  const handleLogin = async () => {
-    await axios
-      .post("http://192.168.100.36:8080/api/login", {
-        email: email,
-        password: password,
-      })
-      .then(async (res) => {
-        if (res.data.data.status === 200) {
-          await AsyncStorage.setItem("Token", res.data.data.token);
-          navigation.navigate("Home");
-        } else {
-          Alert.alert("Gagal", "Login Gagal");
-        }
-      });
+  const handlePasswordChange = () => {
+    if (password !== confPassword) {
+      Alert.alert(
+        "Password Mismatch",
+        "The new password and confirmation do not match."
+      );
+    } else {
+      axios
+        .post("http://192.168.100.36:8080/api/change-password", {
+          email: email,
+          password: password,
+        })
+        .then((response) => {
+          const status = response.data.status;
+          if (status === "success") {
+            Alert.alert(
+              "Berhasil",
+              "Password Berhasil Diubah,Silahkan Login Ulang."
+            );
+            navigation.navigate("LoginScreen");
+          } else {
+            Alert.alert("Error", "Gagal Untuk Merubah Password.");
+          }
+        })
+        .catch((error) => {
+          Alert.alert("Error", "An error occurred: " + error.message);
+        });
+    }
   };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.Light }}>
@@ -85,45 +93,12 @@ const LoginScreen = ({ navigation }) => {
       >
         <View style={{ alignItems: "center", marginBottom: width / 18 }}>
           <Text style={[StylesFont.boldBig, { color: Colors.Light }]}>
-            Login
+            Ganti Password
           </Text>
-        </View>
-        <View style={{ marginBottom: width / 35 }}>
-          <Text style={[StylesFont.semiBoldh4, { color: Colors.Light }]}>
-            Email
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: Colors.Light,
-              borderRadius: 5,
-              paddingHorizontal: width / 25,
-            }}
-          >
-            <FontAwesome name="user" size={20} color={Colors.PrimaryColor} />
-            <TextInput
-              placeholder="email"
-              onChangeText={(text) => setEmail(text)}
-              value={email}
-              style={[
-                StylesFont.semiBoldh5,
-                {
-                  color: Colors.Dark,
-                  flex: 1,
-                  alignItems: "center",
-                  paddingHorizontal: width / 25,
-                  backgroundColor: Colors.Light,
-                  height: height / 15,
-                  borderRadius: width / 60,
-                },
-              ]}
-            />
-          </View>
         </View>
         <View style={{ marginBottom: width / 28 }}>
-          <Text style={[StylesFont.semiBoldh4, { color: Colors.Light }]}>
-            Password
+          <Text style={[StylesFont.semiBoldh4, { color: Colors.Dark }]}>
+            Password Baru
           </Text>
           <View
             style={{
@@ -136,12 +111,17 @@ const LoginScreen = ({ navigation }) => {
               paddingHorizontal: width / 25,
             }}
           >
-            <FontAwesome name="lock" size={20} color={Colors.PrimaryColor} />
+            <FontAwesome
+              name="lock"
+              size={20}
+              style={{ marginHorizontal: 5 }}
+              color={Colors.PrimaryColor}
+            />
             <TextInput
               textContentType="password"
-              onChangeText={(text) => setPassword(text)}
-              placeholder="Password"
+              placeholder="Masukkan Password Baru Anda"
               value={password}
+              onChangeText={(text) => setPassword(text)}
               secureTextEntry={passwordVisibility}
               // inlineImageLeft={iconpassword}
               style={[
@@ -171,14 +151,74 @@ const LoginScreen = ({ navigation }) => {
               )}
             </TouchableOpacity>
           </View>
+        </View>
+        <View style={{ marginBottom: width / 28 }}>
+          <Text style={[StylesFont.semiBoldh4, { color: Colors.Dark }]}>
+            Konfirmasi Password
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: Colors.Light,
+              borderColor: Colors.PrimaryColor,
+              borderWidth: 1,
+              borderRadius: 5,
+              paddingHorizontal: width / 25,
+            }}
+          >
+            <FontAwesome
+              name="lock"
+              size={20}
+              style={{ marginHorizontal: 5 }}
+              color={Colors.PrimaryColor}
+            />
+            <TextInput
+              textContentType="password"
+              value={confPassword}
+              onChangeText={(text) => setConfPassword(text)}
+              placeholder="Konfirmasi Password Baru Anda"
+              secureTextEntry={passwordVisibility}
+              // inlineImageLeft={iconpassword}
+              style={[
+                StylesFont.semiBoldh5,
+                {
+                  color: Colors.Dark,
+                  backgroundColor: Colors.Light,
+                  height: height / 15,
+                  flex: 1,
+                  paddingHorizontal: width / 30,
+                  borderRadius: width / 60,
+                },
+              ]}
+            />
+            <TouchableOpacity
+              // style={{  }}
+              onPress={handlePasswordVisibility}
+            >
+              {rightIcon === "eye" ? (
+                <Ionicons
+                  name="eye-off"
+                  size={24}
+                  color={Colors.PrimaryColor}
+                />
+              ) : (
+                <Ionicons name="eye" size={24} color={Colors.PrimaryColor} />
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={{ marginBottom: width / 28 }}>
           <View style={{ marginTop: width / 10 }}>
             <MyButton
               isLight={true}
-              title="Login"
-              action={() => handleLogin()}
+              title="Submit"
+              action={() => handlePasswordChange()}
             />
           </View>
-          <View style={{ flexDirection: "row", gap: 5, marginTop: width / 30 }}>
+          <View
+            style={{ flexDirection: "row", gap: 5, marginVertical: width / 30 }}
+          >
             <Text style={[StylesFont.boldh5, { color: Colors.Light }]}>
               Belum Punya Akun?
             </Text>
@@ -189,21 +229,10 @@ const LoginScreen = ({ navigation }) => {
               Daftar Sekarang
             </Text>
           </View>
-          <View style={{ flexDirection: "row", gap: 5 }}>
-            <Text style={[StylesFont.boldh5, { color: Colors.Light }]}>
-              Lupa Password?
-            </Text>
-            <Text
-              onPress={() => navigation.navigate("CheckEmail")}
-              style={[StylesFont.boldh5, { color: Colors.Dark }]}
-            >
-              Ganti Password
-            </Text>
-          </View>
         </View>
       </View>
     </SafeAreaView>
   );
 };
 
-export default LoginScreen;
+export default ChangePassword;

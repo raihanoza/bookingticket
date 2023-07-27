@@ -17,6 +17,8 @@ import OrderDetail from "../screens/OrderDetail";
 import Ticket from "../screens/Ticket";
 import BusList from "../screens/BusList";
 import OrderConfirmation from "../screens/OrderConfirmation";
+import CheckEmail from "../screens/CheckEmail";
+import ChangePassword from "../screens/ChangePassword";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -45,6 +47,8 @@ export default function Routes() {
       >
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="CheckEmail" component={CheckEmail} />
+        <Stack.Screen name="ChangePassword" component={ChangePassword} />
         <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
         <Stack.Screen name="SignupScreen" component={SignupScreen} />
         <Stack.Screen name="BusDetail" component={BusDetail} />

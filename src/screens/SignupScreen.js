@@ -74,16 +74,6 @@ const SignupScreen = ({ navigation }) => {
         console.log("Error", error.message);
       }
     }
-
-    // console.log(userData).then(async (res) => {
-    //   if (res.data) {
-    //     // await AsyncStorage.setItem("Token", res.data.data.token);
-    //     navigation.navigate("LoginScreen");
-    //     Alert.alert("Berhasil", "Pendaftaran Berhasil");
-    //   } else {
-    //     Alert.alert("Gagal", "Login Gagal");
-    //   }
-    // });
   };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.PrimaryColor }}>
